@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     
     # DRF 추가
     'rest_framework',
+
+    'articles',
 ]
 
 MIDDLEWARE = [
