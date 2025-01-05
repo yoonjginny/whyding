@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+from PIL import Image
+from io import BytesIO
+from django.core.files import File
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -22,6 +25,19 @@ class Article(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if self.image:
+            # 이미지 리사이징
+            img = Image.open(self.image)
+            if img.height > 1080 or img.width > 1920:
+                output_size = (1920, 1080)
+                img.thumbnail(output_size)
+                # 이미지 품질 최적화
+                img_io = BytesIO()
+                img.save(img_io, format='JPEG', quality=85)
+                self.image = File(img_io, name=self.image.name)
+        super().save(*args, **kwargs)
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
