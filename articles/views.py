@@ -8,6 +8,8 @@ from .serializers import ArticleSerializer, CommentSerializer, TagSerializer
 from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from django_filters import rest_framework as django_filters
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -106,3 +108,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
+
+    @method_decorator(cache_page(60 * 15))  # 15분 캐시
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
