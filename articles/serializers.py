@@ -21,8 +21,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ArticleSerializer(serializers.ModelSerializer):
     author_name = serializers.ReadOnlyField(source='author.username')
-    comments = CommentSerializer(many=True, read_only=True)
-    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.IntegerField(read_only=True)
+    comments = serializers.SerializerMethodField()
+    likes_count = serializers.IntegerField(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
 
     class Meta:
@@ -30,5 +31,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'image', 'is_public', 'created_at', 
                  'author_name', 'view_count', 'likes_count', 'comments', 'tags']
 
-    def get_likes_count(self, obj):
-        return obj.likes.count() 
+    def get_comments(self, obj):
+        if self.context['request'].parser_context['kwargs'].get('pk'):
+            comments = obj.comments.select_related('author')\
+                .prefetch_related('replies__author')\
+                .filter(parent=None)
+            return CommentSerializer(comments, many=True).data
+        return [] 
