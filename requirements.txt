@@ -1,7 +1,23 @@
+# Django & DRF
 asgiref==3.8.1
 Django==5.1.4
 djangorestframework==3.15.2
 drf-nested-routers==0.94.1
+djangorestframework-simplejwt==5.3.1  # JWT 인증
+drf-yasg==1.21.7  # Swagger/OpenAPI
+
+# 이미지 처리
 pillow==11.1.0
+
+# 필터링
+django-filter==23.5  # 필터링 기능
+
+# 테스트 & 개발
+coverage==7.4.1  # 테스트 커버리지
+pytest==8.0.0  # 테스트
+pytest-django==4.8.0  # Django 테스트
+
+# 유틸리티
+python-dotenv==1.0.1  # 환경변수
 sqlparse==0.5.3
 typing_extensions==4.12.2
