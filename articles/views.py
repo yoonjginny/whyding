@@ -27,7 +27,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        return Comment.objects.filter(article_id=self.kwargs['article_pk'], parent=None)
+        return Comment.objects.select_related('author')\
+            .prefetch_related('replies__author')\
+            .filter(
+                article_id=self.kwargs['article_pk'],
+                parent=None
+            )
 
     def perform_create(self, serializer):
         article = Article.objects.get(pk=self.kwargs['article_pk'])
