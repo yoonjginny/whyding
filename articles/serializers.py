@@ -19,16 +19,35 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id', 'content', 'author_name', 'created_at', 'parent', 'replies']
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleListSerializer(serializers.ModelSerializer):
     author_name = serializers.ReadOnlyField(source='author.username')
-    comments = CommentSerializer(many=True, read_only=True)
-    likes_count = serializers.SerializerMethodField()
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    likes_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Article
-        fields = ['id', 'title', 'content', 'image', 'is_public', 'created_at', 
-                 'author_name', 'view_count', 'likes_count', 'comments', 'tags']
+        fields = [
+            'id', 'title', 'content', 'image', 'is_public', 
+            'created_at', 'author_name', 'view_count', 
+            'likes_count', 'comments_count', 'tags'
+        ]
 
-    def get_likes_count(self, obj):
-        return obj.likes.count() 
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    author_name = serializers.ReadOnlyField(source='author.username')
+    likes_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Article
+        fields = [
+            'id', 'title', 'content', 'image', 'is_public', 
+            'created_at', 'author_name', 'view_count', 
+            'likes_count', 'comments_count', 'comments', 'tags'
+        ]
+
+    def get_comments(self, obj):
+        comments = obj.comments.select_related('author')\
+            .prefetch_related('replies__author')\
+            .filter(parent=None)
+        return CommentSerializer(comments, many=True).data 

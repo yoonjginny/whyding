@@ -4,12 +4,18 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Article, Comment, Tag
-from .serializers import ArticleSerializer, CommentSerializer, TagSerializer
+from .serializers import (
+    CommentSerializer, 
+    TagSerializer, 
+    ArticleListSerializer, 
+    ArticleDetailSerializer
+)
 from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from django_filters import rest_framework as django_filters
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.db.models import Count
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -26,7 +32,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        return Comment.objects.filter(article_id=self.kwargs['article_pk'], parent=None)
+        return Comment.objects.select_related('author')\
+            .prefetch_related('replies__author')\
+            .filter(
+                article_id=self.kwargs['article_pk'],
+                parent=None
+            )
 
     def perform_create(self, serializer):
         article = Article.objects.get(pk=self.kwargs['article_pk'])
@@ -35,21 +46,44 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, article=article, parent=parent)
 
 class ArticleFilter(django_filters.FilterSet):
-    tags = django_filters.CharFilter(field_name='tags__name')
+    tags = django_filters.CharFilter(method='filter_tags')
     created_at = django_filters.DateFromToRangeFilter()
     
     class Meta:
         model = Article
         fields = ['tags', 'created_at', 'is_public']
 
+    def filter_tags(self, queryset, name, value):
+        if value:
+            return queryset.filter(tags__name=value)
+        return queryset
+
+    @property
+    def qs(self):
+        return super().qs.select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(
+                likes_count=Count('likes'),
+                comments_count=Count('comments')
+            ).order_by('-created_at')
+
 class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
+    queryset = Article.objects.select_related('author')\
+        .prefetch_related('tags', 'likes', 'comments')\
+        .annotate(
+            likes_count=Count('likes'),
+            comments_count=Count('comments')
+        ).order_by('-created_at')
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ArticleFilter
     search_fields = ['title', 'content', 'tags__name']
-    ordering_fields = ['created_at', 'view_count', 'likes']
+    ordering_fields = ['created_at', 'view_count', 'likes_count']
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ArticleDetailSerializer
+        return ArticleListSerializer
 
     def get_queryset(self):
         queryset = Article.objects.all()
@@ -112,3 +146,24 @@ class ArticleViewSet(viewsets.ModelViewSet):
     @method_decorator(cache_page(60 * 15))  # 15분 캐시
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    @action(detail=False, methods=['get'])
+    def statistics(self, request):
+        stats = Article.objects.aggregate(
+            total_articles=Count('id'),
+            total_comments=Count('comments'),
+        )
+        
+        most_liked = Article.objects.select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(
+                like_count=Count('likes'),
+                comment_count=Count('comments')
+            )\
+            .order_by('-like_count')[:5]
+
+        return Response({
+            'total_articles': stats['total_articles'],
+            'total_comments': stats['total_comments'],
+            'most_liked': ArticleListSerializer(most_liked, many=True).data,
+        })
