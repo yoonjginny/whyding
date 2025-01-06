@@ -41,12 +41,26 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, article=article, parent=parent)
 
 class ArticleFilter(django_filters.FilterSet):
-    tags = django_filters.CharFilter(field_name='tags__name')
     created_at = django_filters.DateFromToRangeFilter()
-    
+    tags = django_filters.ModelMultipleChoiceFilter(
+        field_name='tags__name',
+        to_field_name='name',
+        queryset=Tag.objects.all()
+    )
+
     class Meta:
         model = Article
         fields = ['tags', 'created_at', 'is_public']
+
+    @property
+    def qs(self):
+        # 기본 쿼리셋에 최적화 적용
+        return super().qs.select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(
+                likes_count=Count('likes'),
+                comments_count=Count('comments')
+            )
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.select_related('author')\
