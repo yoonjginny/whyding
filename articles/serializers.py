@@ -19,22 +19,35 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id', 'content', 'author_name', 'created_at', 'parent', 'replies']
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleListSerializer(serializers.ModelSerializer):
     author_name = serializers.ReadOnlyField(source='author.username')
-    comments_count = serializers.IntegerField(read_only=True)
-    comments = serializers.SerializerMethodField()
     likes_count = serializers.IntegerField(read_only=True)
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    comments_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Article
-        fields = ['id', 'title', 'content', 'image', 'is_public', 'created_at', 
-                 'author_name', 'view_count', 'likes_count', 'comments', 'tags']
+        fields = [
+            'id', 'title', 'content', 'image', 'is_public', 
+            'created_at', 'author_name', 'view_count', 
+            'likes_count', 'comments_count', 'tags'
+        ]
+
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    author_name = serializers.ReadOnlyField(source='author.username')
+    likes_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Article
+        fields = [
+            'id', 'title', 'content', 'image', 'is_public', 
+            'created_at', 'author_name', 'view_count', 
+            'likes_count', 'comments_count', 'comments', 'tags'
+        ]
 
     def get_comments(self, obj):
-        if self.context['request'].parser_context['kwargs'].get('pk'):
-            comments = obj.comments.select_related('author')\
-                .prefetch_related('replies__author')\
-                .filter(parent=None)
-            return CommentSerializer(comments, many=True).data
-        return [] 
+        comments = obj.comments.select_related('author')\
+            .prefetch_related('replies__author')\
+            .filter(parent=None)
+        return CommentSerializer(comments, many=True).data 
