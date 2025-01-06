@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 from django_filters import rest_framework as django_filters
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.db.models import Count
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -43,7 +44,12 @@ class ArticleFilter(django_filters.FilterSet):
         fields = ['tags', 'created_at', 'is_public']
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
+    queryset = Article.objects.select_related('author')\
+        .prefetch_related('tags', 'likes', 'comments')\
+        .annotate(
+            likes_count=Count('likes'),
+            comments_count=Count('comments')
+        )
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
