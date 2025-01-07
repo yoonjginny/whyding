@@ -1,41 +1,150 @@
+# Whyding
 
-## 📌 프로젝트 소개
-이 플랫폼은 인공지능(AI) 이미지 생성 기술과 얼굴 스왑 기능을 활용하여 결혼 준비 과정에서의 효율성을 극대화하고, 비용 절감과 시간 단축을 목표로 하는 혁신적인 서비스입니다. AI 기반 웨딩 촬영 시뮬레이션을 통해 예비 부부는 실제 촬영을 하기 전에 다양한 촬영 연출과 포즈를 미리 연습할 수 있으며, 이를 통해 웨딩 촬영에서 자신감을 가질 수 있습니다. 또한, AI는 예비 신부와 신랑의 얼굴을 인식하고 분석하여 맞춤형 드레스 스타일을 추천하고, 각종 웨딩 드레스와 메이크업, 헤어스타일을 시각적으로 체험할 수 있는 기능을 제공합니다.
+AI 웨딩 사진 합성 서비스
 
-## 🌟 프로젝트 선정이유
-비용 절감과 시간 효율화:
-이 플랫폼은 실제 웨딩 스튜디오, 드레스 샵, 메이크업샵 등을 이용하기 전에 미리 다양한 스타일을 시뮬레이션해볼 수 있도록 도와줍니다. 이를 통해 스튜디오 촬영이나 드레스 선택에 있어 시간과 비용을 절감하며, 불필요한 반복을 피할 수 있습니다. 예비 부부는 실시간으로 결과를 확인하고 조정할 수 있어, 실제 결혼 준비에서 발생할 수 있는 예산 초과나 시간 낭비를 최소화할 수 있습니다.
+## 🛠 기술 스택
 
-실제 웨딩 촬영까지 연계:
-플랫폼에서 생성된 고퀄리티 이미지는 실제 결혼식 준비에 필요한 다양한 용도로 활용이 가능합니다. 예를 들어, 웨딩 초대장, 결혼식 앨범, 디지털 기록물 등에 활용할 수 있는 고해상도 이미지를 생성하고, 실제 촬영 시 이 이미지를 바탕으로 더 완성도 높은 결과물을 도출할 수 있습니다. 또한, 이 플랫폼은 결혼식 당일에 필요한 스튜디오와 드레스, 메이크업 예약 기능도 통합하여, 편리하고 효율적인 웨딩 준비를 지원합니다.
+- **Backend**: Django 5.1.4, Django REST Framework 3.15.2
+- **Database**: MariaDB
+- **Authentication**: JWT (djangorestframework-simplejwt)
+- **Documentation**: Swagger/OpenAPI (drf-yasg)
+- **Testing**: Django Test Framework, Coverage
+- **Image Processing**: Pillow
 
-AI 기반 웨딩 준비 플랫폼은 예비 부부에게 현실적인 웨딩 촬영 연습과 드레스 선택, 포즈 연습을 미리 해볼 수 있는 혁신적인 솔루션을 제공합니다. 이를 통해 웨딩 비용을 절감하고, 결혼 준비 과정에서의 스트레스를 최소화하며, 더욱 완성도 높은 웨딩을 준비할 수 있습니다.
+## 📋 주요 기능
+
+### 1. 사용자 관리
+- 회원가입/로그인 (JWT 기반 인증)
+- 프로필 관리 (이미지 업로드 포함)
+- 비밀번호 변경
+- 계정 삭제
+
+### 2. 게시물 관리
+- CRUD 기능
+- 이미지 업로드
+- 태그 기능
+- 좋아요 기능
+- 조회수 기능
+- 공개/비공개 설정
+
+### 3. 댓글 시스템
+- 댓글 CRUD
+- 대댓글 기능
+
+### 4. 기타 기능
+- 태그 기반 검색
+- 통계 기능
+- 페이지네이션
+
+## 🚀 시작하기
+
+### 설치 방법
+
+1. **저장소 클론**
+```bash
+git clone [repository-url]
+cd whyding
+```
+
+2. **가상환경 설정**
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+```
+
+3. **의존성 설치**
+```bash
+pip install -r requirements.txt
+```
+
+4. **환경 변수 설정**
+```bash
+cp .env.example .env
+# .env 파일 수정
+```
+
+5. **데이터베이스 설정**
+```bash
+python manage.py migrate
+```
+
+6. **관리자 계정 생성**
+```bash
+python manage.py createsuperuser
+```
+
+7. **서버 실행**
+```bash
+python manage.py runserver
+```
+
+## 📝 API 문서
+
+- Swagger UI: `/swagger/`
+- ReDoc: `/redoc/`
+
+## 🧪 테스트
+
+```bash
+# 전체 테스트 실행
+python manage.py test
+
+# 특정 앱 테스트
+python manage.py test articles
+
+# 테스트 커버리지 확인
+coverage run manage.py test
+coverage report
+coverage html
+```
+
 ## 📁 프로젝트 구조
 
+```
+whyding/
+├── accounts/          # 사용자 관리
+├── articles/          # 게시물 관리
+├── config/           # 프로젝트 설정
+├── media/            # 미디어 파일
+└── requirements.txt  # 의존성 목록
+```
 
----
-## 🎮 주요 기능
+## 🔐 보안
 
+- JWT 기반 인증
+- 비밀번호 해싱
+- CORS 설정
+- XSS/CSRF 방지
 
----
-## 🛠 기술 스택
-inswapper_128.onnx
-1k3d68.onnx
-2d106det.onnx
-det_10g.onnx
-genderage.onnx
-w600k_r50.onnx
+## 🔄 API 엔드포인트
 
----
-## 💻 설치 및 실행 방법
+자세한 API 문서는 Swagger UI에서 확인 가능합니다.
 
+## 📈 성능 최적화
 
----
-## 🔍 문제 해결 방안
+- 데이터베이스 인덱싱
+- 쿼리 최적화 (select_related, prefetch_related)
+- 이미지 리사이징
 
+## 📜 라이센스
 
----
-## 결과
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
+## 🔄 버전 관리
 
----
+- **v1.0.0** - 초기 릴리즈
+
+## 👥 팀 정보
+
+- 개발자 정보
+- 연락처
+
+## 🔜 향후 계획
+
+- [ ] 소셜 로그인
+- [ ] 알림 시스템
+- [ ] 실시간 채팅
+
+## ⚠️ 알려진 이슈
+
+현재 알려진 이슈들과 해결 방법을 기록합니다.
