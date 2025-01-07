@@ -7,9 +7,10 @@ from django.urls import reverse
 
 class ArticleTests(APITestCase):
     def setUp(self):
-        # 테스트용 사용자 생성
-        self.user = get_user_model().objects.create_user(
-            username='testuser', 
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
             password='testpass123'
         )
         self.client.force_authenticate(user=self.user)
