@@ -31,9 +31,11 @@ INSTALLED_APPS = [
     'accounts',
     'django_filters',
     'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,3 +127,13 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# CORS 설정 추가 필요
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+# 보안 설정 추가
+SECURE_SSL_REDIRECT = True  # HTTPS 리다이렉트
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
