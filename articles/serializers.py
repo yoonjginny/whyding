@@ -51,3 +51,14 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
             .prefetch_related('replies__author')\
             .filter(parent=None)
         return CommentSerializer(comments, many=True).data 
+
+class ArticleSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.email')
+    
+    class Meta:
+        model = Article
+        fields = [
+            'id', 'title', 'content', 'author',
+            'created_at', 'updated_at', 'tags',
+            'likes_count', 'comments_count'
+        ] 

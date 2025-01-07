@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import RegisterSerializer, UserSerializer, DeleteAccountSerializer
-from .models import CustomUser
+from .models import User
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -25,7 +25,7 @@ class RegisterView(generics.CreateAPIView):
 
     성공적으로 회원가입이 완료되면 메시지를 반환합니다.
     """
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]  # 모든 사용자에게 접근 허용
 
@@ -88,7 +88,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     
     이메일 중복 검사를 수행하며, 수정된 이메일이 이미 존재하는 경우 오류 메시지를 반환합니다.
     """
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근 가능
 
