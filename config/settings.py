@@ -1,4 +1,6 @@
 from pathlib import Path
+from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,16 +126,28 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 AUTH_USER_MODEL = 'accounts.User'
-
-# CORS 설정 추가 필요
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
 
 # 보안 설정 추가
 SECURE_SSL_REDIRECT = True  # HTTPS 리다이렉트
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 개발 환경에서 CORS 허용
+CORS_ALLOW_ALL_ORIGINS = True  # 개발 환경에서만 사용
+
+# JWT 설정
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
