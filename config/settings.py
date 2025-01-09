@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-0xpy9zq46bsyu)vezcs2jn@8)!ff28acnp!5&t%1t9ka+dp(1r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -135,9 +135,9 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'accounts.User'
 
 # 보안 설정 추가
-SECURE_SSL_REDIRECT = True  # HTTPS 리다이렉트
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True  # HTTPS 리다이렉트
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
