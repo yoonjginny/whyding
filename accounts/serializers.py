@@ -26,3 +26,10 @@ class SignupSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, validators=[validate_password])
+
+class DeleteAccountSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True)
+
+    def validate_password(self, value):
+        # 비밀번호에 대한 추가 유효성 검사 로직을 추가할 수 있습니다.
+        return value
