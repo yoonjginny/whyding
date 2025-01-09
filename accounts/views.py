@@ -61,3 +61,10 @@ class DeleteAccountView(APIView):
             else:
                 return Response({"password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TokenVerifyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # 요청이 유효한 경우, 200 OK 응답을 반환
+        return Response({"message": "Token is valid."}, status=status.HTTP_200_OK)

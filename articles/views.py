@@ -14,6 +14,7 @@ from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -113,7 +114,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return Response({
             'total_articles': stats['total_articles'],
             'total_comments': stats['total_comments'],
-            'most_liked': ArticleSerializer(most_liked, many=True).data,
+            'most_liked': ArticleListSerializer(most_liked, many=True).data,
         })
 
     def retrieve(self, request, *args, **kwargs):
@@ -154,3 +155,5 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.user != instance.author:
             raise PermissionDenied("You cannot delete this comment.")
         instance.delete()
+
+
