@@ -61,6 +61,7 @@ erDiagram
         string image
         boolean is_public
         int view_count
+        int like_count
         datetime created_at
         datetime updated_at
     }
@@ -70,20 +71,9 @@ erDiagram
         int article_id FK
         int author_id FK
         int parent_id FK "null"
-        text content
+        text comment
         datetime created_at
         datetime updated_at
-    }
-
-    Tag {
-        int id PK
-        string name UK
-    }
-
-    ArticleTag {
-        int id PK
-        int article_id FK
-        int tag_id FK
     }
 
     ArticleLike {
