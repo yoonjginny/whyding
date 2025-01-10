@@ -48,7 +48,6 @@ erDiagram
     User ||--o{ ArticleLike : "좋아요"
     Article ||--o{ Comment : "포함"
     Article ||--o{ ArticleLike : "받음"
-    Article }|--|| Tag : "포함"
     Comment ||--o{ Comment : "대댓글"
 ```
 
