@@ -63,7 +63,7 @@ class DeleteAccountView(APIView):
             )
             if user:
                 user.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Account deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

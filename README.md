@@ -36,6 +36,72 @@ AI 웨딩 사진 합성 서비스
 - 통계 기능
 - 페이지네이션
 
+## ⛓️ERD
+
+```mermaid
+erDiagram
+    User {
+        int id PK
+        string email UK
+        string username UK
+        string password
+        string profile_image
+        text introduction
+        datetime date_joined
+        boolean is_active
+        boolean is_staff
+        boolean is_superuser
+    }
+
+    Article {
+        int id PK
+        int author_id FK
+        string title
+        text content
+        string image
+        boolean is_public
+        int view_count
+        datetime created_at
+        datetime updated_at
+    }
+
+    Comment {
+        int id PK
+        int article_id FK
+        int author_id FK
+        int parent_id FK "null"
+        text content
+        datetime created_at
+        datetime updated_at
+    }
+
+    Tag {
+        int id PK
+        string name UK
+    }
+
+    ArticleTag {
+        int id PK
+        int article_id FK
+        int tag_id FK
+    }
+
+    ArticleLike {
+        int id PK
+        int article_id FK
+        int user_id FK
+        datetime created_at
+    }
+
+    User ||--o{ Article : "작성"
+    User ||--o{ Comment : "작성"
+    User ||--o{ ArticleLike : "좋아요"
+    Article ||--o{ Comment : "포함"
+    Article ||--o{ ArticleLike : "받음"
+    Article }|--|| Tag : "포함"
+    Comment ||--o{ Comment : "대댓글"
+```
+
 ## 🚀 시작하기
 
 ### 설치 방법
