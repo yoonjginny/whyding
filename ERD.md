@@ -21,6 +21,7 @@ erDiagram
         string image
         boolean is_public
         int view_count
+        int like_count
         datetime created_at
         datetime updated_at
     }
@@ -30,20 +31,9 @@ erDiagram
         int article_id FK
         int author_id FK
         int parent_id FK "null"
-        text content
+        text comment
         datetime created_at
         datetime updated_at
-    }
-
-    Tag {
-        int id PK
-        string name UK
-    }
-
-    ArticleTag {
-        int id PK
-        int article_id FK
-        int tag_id FK
     }
 
     ArticleLike {
@@ -86,6 +76,9 @@ erDiagram
   - `image`: 이미지 경로
   - `is_public`: 공개/비공개 여부
   - `view_count`: 조회수
+  - `like_count`: 좋아요 수
+  - `created_at`: 작성일
+  - `updated_at`: 수정일
 
 ## 3. Comment (댓글)
 - 게시물에 대한 댓글
@@ -94,22 +87,11 @@ erDiagram
   - `article_id`: 게시물 ID (Article 참조)
   - `author_id`: 작성자 ID (User 참조)
   - `parent_id`: 부모 댓글 ID (대댓글용)
-  - `content`: 댓글 내용
+  - `comment`: 댓글 내용
+  - `created_at`: 작성일
+  - `updated_at`: 수정일
 
-## 4. Tag (태그)
-- 게시물 분류용 태그
-- **주요 필드**:
-  - `id`: 고유 식별자
-  - `name`: 태그 이름 (고유값)
-
-## 5. ArticleTag (게시물-태그 연결)
-- Article과 Tag의 다대다 관계 연결
-- **주요 필드**:
-  - `id`: 고유 식별자
-  - `article_id`: 게시물 ID
-  - `tag_id`: 태그 ID
-
-## 6. ArticleLike (좋아요)
+## 4. ArticleLike (좋아요)
 - 게시물에 대한 좋아요 정보
 - **주요 필드**:
   - `id`: 고유 식별자
@@ -131,19 +113,14 @@ erDiagram
    - 한 게시물에 여러 댓글이 달릴 수 있음
    - `Comment.article_id`가 `Article.id` 참조
 
-4. **Article - Tag (M:N)**
-   - 한 게시물이 여러 태그를 가질 수 있음
-   - 한 태그가 여러 게시물에 사용될 수 있음
-   - `ArticleTag` 테이블을 통해 연결
-
-5. **User - ArticleLike (1:N)**
+4. **User - ArticleLike (1:N)**
    - 한 사용자가 여러 게시물에 좋아요 가능
    - `ArticleLike.user_id`가 `User.id` 참조
 
-6. **Article - ArticleLike (1:N)**
+5. **Article - ArticleLike (1:N)**
    - 한 게시물이 여러 좋아요를 받을 수 있음
    - `ArticleLike.article_id`가 `Article.id` 참조
 
-7. **Comment - Comment (1:N)**
+6. **Comment - Comment (1:N)**
    - 댓글에 대댓글을 달 수 있음
    - `Comment.parent_id`가 같은 테이블의 `id` 참조 (자기참조)
