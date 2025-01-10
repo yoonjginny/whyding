@@ -1,22 +1,35 @@
 from rest_framework import serializers
 from .models import User
-
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    
-    class Meta:
-        model = User
-        fields = ('email', 'username', 'password', 'nickname')
-        
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+from django.contrib.auth.password_validation import validate_password
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'nickname', 'profile_image', 'introduction')
-        read_only_fields = ('email',)
+        fields = ['id', 'email', 'username', 'profile_image', 'introduction']
+
+class SignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'username']
+    
+    def create(self, validated_data):
+        user = User.objects.create(
+            email=validated_data['email'],
+            username=validated_data['username']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True, validators=[validate_password])
 
 class DeleteAccountSerializer(serializers.Serializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(required=True)
+
+    def validate_password(self, value):
+        # 비밀번호에 대한 추가 유효성 검사 로직을 추가할 수 있습니다.
+        return value

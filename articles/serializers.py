@@ -1,64 +1,80 @@
 from rest_framework import serializers
 from .models import Article, Comment, Tag
+from accounts.serializers import UserSerializer
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id', 'name']
 
-class RecursiveCommentSerializer(serializers.Serializer):
-    def to_representation(self, instance):
-        serializer = CommentSerializer(instance, context=self.context)
-        return serializer.data
-
-class CommentSerializer(serializers.ModelSerializer):
-    author_name = serializers.ReadOnlyField(source='author.username')
-    replies = RecursiveCommentSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = ['id', 'content', 'author_name', 'created_at', 'parent', 'replies']
-
-class ArticleListSerializer(serializers.ModelSerializer):
-    author_name = serializers.ReadOnlyField(source='author.username')
-    likes_count = serializers.IntegerField(read_only=True)
-    comments_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Article
-        fields = [
-            'id', 'title', 'content', 'image', 'is_public', 
-            'created_at', 'author_name', 'view_count', 
-            'likes_count', 'comments_count', 'tags'
-        ]
-
-class ArticleDetailSerializer(serializers.ModelSerializer):
-    author_name = serializers.ReadOnlyField(source='author.username')
-    likes_count = serializers.IntegerField(read_only=True)
-    comments_count = serializers.IntegerField(read_only=True)
-    comments = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Article
-        fields = [
-            'id', 'title', 'content', 'image', 'is_public', 
-            'created_at', 'author_name', 'view_count', 
-            'likes_count', 'comments_count', 'comments', 'tags'
-        ]
-
-    def get_comments(self, obj):
-        comments = obj.comments.select_related('author')\
-            .prefetch_related('replies__author')\
-            .filter(parent=None)
-        return CommentSerializer(comments, many=True).data 
-
 class ArticleSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.email')
+    author = UserSerializer(read_only=True)
+    like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        write_only=True,
+        source='tags'
+    )
     
     class Meta:
         model = Article
         fields = [
-            'id', 'title', 'content', 'author',
-            'created_at', 'updated_at', 'tags',
-            'likes_count', 'comments_count'
-        ] 
+            'id', 'author', 'title', 'content', 'image', 'is_public',
+            'view_count', 'like_count', 'tags', 'tag_ids',
+            'created_at', 'updated_at'
+        ]
+    
+    def create(self, validated_data):
+        tags = validated_data.pop('tags', [])
+        article = Article.objects.create(**validated_data)
+        article.tags.set(tags)
+        return article
+
+class ArticleListSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Article
+        fields = [
+            'id', 'author', 'title', 'is_public',
+            'view_count', 'like_count', 'tags',
+            'created_at'
+        ]
+
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Article
+        fields = [
+            'id', 'author', 'title', 'content', 'image', 'is_public',
+            'view_count', 'like_count', 'tags', 'comments',
+            'created_at', 'updated_at'
+        ]
+    
+    def get_comments(self, obj):
+        comments = obj.comments.filter(parent__isnull=True)
+        return CommentSerializer(comments, many=True).data
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    replies = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Comment
+        fields = [
+            'id', 'author', 'content', 'parent', 'replies',
+            'created_at', 'updated_at'
+        ]
+    
+    def get_replies(self, obj):
+        if obj.replies.exists():
+            return CommentSerializer(obj.replies.all(), many=True).data
+        return []
