@@ -61,6 +61,7 @@ erDiagram
         string image
         boolean is_public
         int view_count
+        int like_count
         datetime created_at
         datetime updated_at
     }
@@ -70,20 +71,9 @@ erDiagram
         int article_id FK
         int author_id FK
         int parent_id FK "null"
-        text content
+        text comment
         datetime created_at
         datetime updated_at
-    }
-
-    Tag {
-        int id PK
-        string name UK
-    }
-
-    ArticleTag {
-        int id PK
-        int article_id FK
-        int tag_id FK
     }
 
     ArticleLike {
@@ -98,7 +88,6 @@ erDiagram
     User ||--o{ ArticleLike : "좋아요"
     Article ||--o{ Comment : "포함"
     Article ||--o{ ArticleLike : "받음"
-    Article }|--|| Tag : "포함"
     Comment ||--o{ Comment : "대댓글"
 ```
 
