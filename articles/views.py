@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Article, Comment, Tag
+from .models import Article, Comment
 from .serializers import ArticleSerializer, ArticleListSerializer, ArticleDetailSerializer, CommentSerializer
 from rest_framework import permissions, generics
 from rest_framework.exceptions import ValidationError
@@ -40,22 +40,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, article=article, parent=parent)
 
 class ArticleFilter(django_filters.FilterSet):
-    tags = django_filters.CharFilter(method='filter_tags')
     created_at = django_filters.DateFromToRangeFilter()
     
     class Meta:
         model = Article
-        fields = ['tags', 'created_at', 'is_public']
-
-    def filter_tags(self, queryset, name, value):
-        if value:
-            return queryset.filter(tags__name=value)
-        return queryset
+        fields = ['created_at', 'is_public']
 
     @property
     def qs(self):
         return super().qs.select_related('author')\
-            .prefetch_related('tags')\
             .annotate(
                 likes_count=Count('likes'),
                 comments_count=Count('comments')
@@ -63,7 +56,7 @@ class ArticleFilter(django_filters.FilterSet):
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.select_related('author')\
-        .prefetch_related('tags', 'likes', 'comments')\
+        .prefetch_related('likes', 'comments')\
         .annotate(
             likes_count=Count('likes'),
             comments_count=Count('comments')
@@ -71,7 +64,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ArticleFilter
-    search_fields = ['title', 'content', 'tags__name']
+    search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
     
     def get_serializer_class(self):
@@ -103,7 +96,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
         )
         
         most_liked = Article.objects.select_related('author')\
-            .prefetch_related('tags')\
             .annotate(
                 like_count=Count('likes'),
                 comment_count=Count('comments')

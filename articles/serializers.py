@@ -1,61 +1,49 @@
 from rest_framework import serializers
-from .models import Article, Comment, Tag
+from .models import Article, Comment
 from accounts.serializers import UserSerializer
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id', 'name']
 
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
-    tag_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(),
-        many=True,
-        write_only=True,
-        source='tags'
-    )
     
     class Meta:
         model = Article
         fields = [
-            'id', 'author', 'title', 'content', 'image', 'is_public',
-            'view_count', 'like_count', 'tags', 'tag_ids',
-            'created_at', 'updated_at'
+            'id', 'author', 'title', 'content', 'is_public', 'image',
+            'view_count', 'like_count', 'created_at', 'updated_at'
         ]
+        extra_kwargs = {
+            'title': {'required': False},      # 제목 필드를 선택적으로 설정
+            'content': {'required': False},    # 내용 필드를 선택적으로 설정
+            'is_public': {'required': False},  # 공개 여부 필드를 선택적으로 설정
+            'image': {'required': False},      # 이미지 필드를 선택적으로 설정
+        }
     
     def create(self, validated_data):
-        tags = validated_data.pop('tags', [])
         article = Article.objects.create(**validated_data)
-        article.tags.set(tags)
         return article
 
 class ArticleListSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
     
     class Meta:
         model = Article
         fields = [
             'id', 'author', 'title', 'is_public',
-            'view_count', 'like_count', 'tags',
-            'created_at'
+            'view_count', 'like_count', 'created_at'
         ]
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField()
     
     class Meta:
         model = Article
         fields = [
             'id', 'author', 'title', 'content', 'image', 'is_public',
-            'view_count', 'like_count', 'tags', 'comments',
+            'view_count', 'like_count', 'comments',
             'created_at', 'updated_at'
         ]
     
