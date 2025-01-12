@@ -14,6 +14,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -66,6 +68,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filterset_class = ArticleFilter
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
+    parser_classes = (MultiPartParser, FormParser)  # 파일 업로드를 위한 parser 추가
     
     def get_serializer_class(self):
         if self.action == 'list':
@@ -76,6 +79,19 @@ class ArticleViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # 기존 이미지가 있고 새 이미지가 업로드된 경우 기존 이미지 삭제
+        if instance.image and request.FILES.get('image'):
+            instance.image.delete()
+            
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
