@@ -63,6 +63,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
             likes_count=Count('likes'),
             comments_count=Count('comments')
         ).order_by('-created_at')
+    serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ArticleFilter
