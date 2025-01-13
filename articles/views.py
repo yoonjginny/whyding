@@ -14,30 +14,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
         return obj.author == request.user
-
-class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        return Comment.objects.select_related('author')\
-            .prefetch_related('replies__author')\
-            .filter(
-                article_id=self.kwargs['article_pk'],
-                parent=None
-            )
-
-    def perform_create(self, serializer):
-        article = Article.objects.get(pk=self.kwargs['article_pk'])
-        parent_id = self.request.data.get('parent')
-        parent = Comment.objects.get(pk=parent_id) if parent_id else None
-        serializer.save(author=self.request.user, article=article, parent=parent)
 
 class ArticleFilter(django_filters.FilterSet):
     created_at = django_filters.DateFromToRangeFilter()
@@ -61,11 +45,13 @@ class ArticleViewSet(viewsets.ModelViewSet):
             likes_count=Count('likes'),
             comments_count=Count('comments')
         ).order_by('-created_at')
+    serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ArticleFilter
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
+    parser_classes = (MultiPartParser, FormParser)  # 파일 업로드를 위한 parser 추가
     
     def get_serializer_class(self):
         if self.action == 'list':
@@ -76,6 +62,19 @@ class ArticleViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # 기존 이미지가 있고 새 이미지가 업로드된 경우 기존 이미지 삭제
+        if instance.image and request.FILES.get('image'):
+            instance.image.delete()
+            
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
     
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
@@ -117,24 +116,48 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 class CommentListCreateView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
-    
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_queryset(self):
-        article_id = self.kwargs['id']
-        return Comment.objects.filter(article__id=article_id, parent__isnull=True)
-    
+        if getattr(self, 'swagger_fake_view', False):  # Swagger 스키마 생성 시 처리
+            return Comment.objects.none()
+            
+        article_id = self.kwargs.get('id')
+        return Comment.objects.filter(article_id=article_id)
+
     def perform_create(self, serializer):
-        article_id = self.kwargs['id']
+        article_id = self.kwargs.get('id')
         article = get_object_or_404(Article, id=article_id)
         serializer.save(author=self.request.user, article=article)
 
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Comment.objects.select_related('author')\
+            .prefetch_related('replies__author')\
+            .filter(
+                article_id=self.kwargs['article_pk'],
+                parent=None
+            )
+
+    def perform_create(self, serializer):
+        article = Article.objects.get(pk=self.kwargs['article_pk'])
+        parent_id = self.request.data.get('parent')
+        parent = Comment.objects.get(pk=parent_id) if parent_id else None
+        serializer.save(author=self.request.user, article=article, parent=parent)
+        
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
-    
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_queryset(self):
-        article_id = self.kwargs['id']
-        return Comment.objects.filter(article__id=article_id)
+        if getattr(self, 'swagger_fake_view', False):  # Swagger 스키마 생성 시 처리
+            return Comment.objects.none()
+            
+        article_id = self.kwargs.get('id')
+        return Comment.objects.filter(article_id=article_id)
     
     def perform_update(self, serializer):
         comment = self.get_object()

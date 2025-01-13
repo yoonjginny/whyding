@@ -5,6 +5,7 @@ from accounts.serializers import UserSerializer
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    image = serializers.ImageField(required=False)
     
     class Meta:
         model = Article

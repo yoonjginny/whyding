@@ -5,6 +5,7 @@ from .serializers import SignupSerializer, UserSerializer, ChangePasswordSeriali
 from .models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class SignupView(generics.CreateAPIView):
     serializer_class = SignupSerializer
@@ -74,3 +75,15 @@ class TokenVerifyView(APIView):
     def get(self, request):
         # 요청이 유효한 경우, 200 OK 응답을 반환
         return Response({"message": "Token is valid."}, status=status.HTTP_200_OK)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "로그아웃되었습니다."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "유효하지 않은 토큰입니다."}, status=status.HTTP_400_BAD_REQUEST)

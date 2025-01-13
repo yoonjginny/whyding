@@ -11,6 +11,9 @@ AI 웨딩 사진 합성 서비스
 - **Testing**: Django Test Framework, Coverage
 - **Image Processing**: Pillow
 
+## 🌐 아키텍처
+![Architecture](./images/architecture_v2.drawio.png)
+
 ## 📋 주요 기능
 
 ### 1. 사용자 관리
