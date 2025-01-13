@@ -65,6 +65,7 @@ venv.bak/
 # Static files
 static/
 media/
+images/
 
 # Coverage
 htmlcov/
