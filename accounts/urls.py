@@ -9,6 +9,7 @@ from .views import (
     ChangePasswordView,
     DeleteAccountView,
     TokenVerifyView,
+    LogoutView,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('password/<str:username>/', ChangePasswordView.as_view(), name='password'),
     path('delete/', DeleteAccountView.as_view(), name='delete-account'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]
