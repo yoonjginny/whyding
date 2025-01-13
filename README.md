@@ -1,6 +1,7 @@
 # Whyding
 
 ## 👀 소개
+
 AI 웨딩 사진 합성 서비스
 
 ## 🛠 기술 스택
@@ -13,6 +14,7 @@ AI 웨딩 사진 합성 서비스
 - **Image Processing**: Pillow
 
 ## 🌐 아키텍처
+
 ![Architecture](./images/architecture_v2.drawio.png)
 
 ## 📋 주요 기능
