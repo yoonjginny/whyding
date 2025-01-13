@@ -1,4 +1,4 @@
-# Whyding
+![logo](./00_data/logo/logo.svg)
 
 ## 👀 소개
 
