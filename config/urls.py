@@ -9,15 +9,19 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Django REST API",
+        title="API 문서",
         default_version='v1',
-        description="API 문서화",
+        description="API 설명",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    patterns=[
+        path('api/articles/', include('articles.urls')),
+        path('api/accounts/', include('accounts.urls')),
+    ],
 )
 
 urlpatterns = [
