@@ -25,6 +25,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    view_count = serializers.IntegerField(read_only=True)
     image = serializers.ImageField(required=False)
     
     class Meta:

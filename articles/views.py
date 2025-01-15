@@ -15,6 +15,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db import models
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -144,8 +145,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
         })
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        게시글 상세 조회 시 조회수 증가
+        """
         instance = self.get_object()
-        instance.increase_view_count()
+        # 작성자가 아닌 경우에만 조회수 증가
+        if instance.author != request.user:
+            instance.view_count = models.F('view_count') + 1
+            instance.save()
+            # F() 함수로 인해 변경된 값을 다시 가져오기 위해 refresh
+            instance.refresh_from_db()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

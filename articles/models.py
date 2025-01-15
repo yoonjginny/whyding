@@ -26,7 +26,11 @@ class Article(models.Model):
         default=True,
         help_text='공개 여부를 설정하세요 (기본값: 공개)'
     )
-    view_count = models.PositiveIntegerField(default=0)
+    view_count = models.PositiveIntegerField(
+        default=0,
+        help_text='조회수 (자동 집계)',
+        editable=False
+    )
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_articles',
