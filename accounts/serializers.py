@@ -7,26 +7,47 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'username', 'profile_image', 'introduction']
         read_only_fields = ['id', 'email']
+        extra_kwargs = {
+            'profile_image': {
+                'required': False,
+                'help_text': '프로필 이미지를 업로드하세요. (선택사항)'
+            },
+            'introduction': {
+                'required': False,
+                'help_text': '자기소개를 입력하세요. (선택사항)'
+            },
+            'username': {
+                'help_text': '사용자 이름을 입력하세요. (필수)'
+            }
+        }
 
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
         validators=[validate_password],
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text='비밀번호를 입력하세요. (필수)'
     )
     password_confirm = serializers.CharField(
         write_only=True,
         required=True,
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        help_text='비밀번호를 다시 입력하세요. (필수)'
     )
     
     class Meta:
         model = User
         fields = ['email', 'password', 'password_confirm', 'username']
         extra_kwargs = {
-            'email': {'required': True},
-            'username': {'required': True}
+            'email': {
+                'required': True,
+                'help_text': '로그인에 사용할 이메일 주소를 입력하세요. (필수)'
+            },
+            'username': {
+                'required': True,
+                'help_text': '사용자 이름을 입력하세요. (필수)'
+            }
         }
     
     def validate(self, attrs):

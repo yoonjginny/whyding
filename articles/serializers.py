@@ -25,6 +25,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    view_count = serializers.IntegerField(read_only=True)
     image = serializers.ImageField(required=False)
     
     class Meta:
@@ -35,9 +36,27 @@ class ArticleSerializer(serializers.ModelSerializer):
             'like_count', 'created_at', 'updated_at'
         ]
         extra_kwargs = {
-            'title': {'required': False},
-            'content': {'required': True},
-            'is_public': {'required': False},
+            'title': {
+                'required': False,
+                'help_text': '제목 (선택)',
+                'allow_blank': True
+            },
+            'content': {
+                'required': True,
+                'help_text': '내용 (필수)',
+                'error_messages': {
+                    'required': '내용을 입력해주세요.'
+                }
+            },
+            'is_public': {
+                'required': False,
+                'help_text': '공개 여부 (선택, 기본값: 공개)',
+                'default': True
+            },
+            'image': {
+                'required': False,
+                'help_text': '이미지 (선택)'
+            }
         }
 
 class ArticleListSerializer(ArticleSerializer):
