@@ -10,16 +10,27 @@ class Article(models.Model):
     title = models.CharField(
         max_length=255,
         blank=True,
-        null=True
+        null=True,
+        help_text='제목을 입력하세요 (선택사항)'
     )
-    content = models.TextField()
+    content = models.TextField(
+        help_text='내용을 입력하세요 (필수사항)'
+    )
     image = models.ImageField(
         upload_to='articles/%Y/%m/%d/',
+        blank=True,
         null=True,
-        blank=True
+        help_text='이미지를 업로드하세요 (선택사항)'
     )
-    is_public = models.BooleanField(default=True)
-    view_count = models.PositiveIntegerField(default=0)
+    is_public = models.BooleanField(
+        default=True,
+        help_text='공개 여부를 설정하세요 (기본값: 공개)'
+    )
+    view_count = models.PositiveIntegerField(
+        default=0,
+        help_text='조회수 (자동 집계)',
+        editable=False
+    )
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_articles',

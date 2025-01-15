@@ -15,6 +15,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db import models
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -49,21 +50,52 @@ class ArticleViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
     parser_classes = (MultiPartParser, FormParser)
+    serializer_class = ArticleSerializer
 
     def get_queryset(self):
-        return Article.objects.select_related('author')\
+        # 기본 쿼리셋 정의
+        queryset = Article.objects.select_related('author')\
             .prefetch_related('likes', 'comments')\
             .annotate(
                 likes_count=Count('likes'),
                 comments_count=Count('comments')
-            ).order_by('-created_at')
+            )
+        return queryset
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return ArticleListSerializer
-        elif self.action == 'retrieve':
-            return ArticleDetailSerializer
-        return ArticleSerializer
+            if self.action == 'list':
+                return ArticleListSerializer
+            elif self.action == 'retrieve':
+                return ArticleDetailSerializer
+            return ArticleSerializer
+    
+    @action(detail=False, methods=['get'])
+    def my_articles(self, request):
+        """사용자 본인의 게시물만 조회"""
+        queryset = self.get_queryset().filter(author=request.user)
+        queryset = self.filter_queryset(queryset)  # 필터 적용
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def public_articles(self, request):
+        """공개된 게시물만 조회"""
+        queryset = self.get_queryset().filter(is_public=True)
+        queryset = self.filter_queryset(queryset)  # 필터 적용
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        """기본 list 메서드를 오버라이드하여 공개된 게시물만 보이도록 수정"""
+        return self.public_articles(request)
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -113,8 +145,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
         })
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        게시글 상세 조회 시 조회수 증가
+        """
         instance = self.get_object()
-        instance.increase_view_count()
+        # 작성자가 아닌 경우에만 조회수 증가
+        if instance.author != request.user:
+            instance.view_count = models.F('view_count') + 1
+            instance.save()
+            # F() 함수로 인해 변경된 값을 다시 가져오기 위해 refresh
+            instance.refresh_from_db()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
