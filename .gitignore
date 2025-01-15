@@ -85,3 +85,6 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
+
+# Architecture
+architecture.drawio
