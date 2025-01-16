@@ -1,4 +1,4 @@
-![logo](./00_data/logo/logo.svg)
+![logo](./images/logo/logo.svg)
 
 ## 👀 소개
 
