@@ -75,3 +75,7 @@ class ArticleDetailSerializer(ArticleSerializer):
     def get_comments(self, obj):
         comments = obj.comments.filter(parent=None)
         return CommentSerializer(comments, many=True).data
+
+class ArticleLikeResponseSerializer(serializers.Serializer):
+    message = serializers.CharField(help_text="처리 결과 메시지")
+    like_count = serializers.IntegerField(help_text="현재 좋아요 수")
