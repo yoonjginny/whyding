@@ -112,17 +112,30 @@ class ArticleViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
     
-    @action(detail=True, methods=['post'])
+    @action(
+        detail=True, 
+        methods=['post'], 
+        serializer_class=None  # Request Body가 필요없으므로 None으로 설정
+    )
     def like(self, request, pk=None):
+        """
+        게시물 좋아요 토글 (추가/제거)
+        """
         article = self.get_object()
         user = request.user
         
-        if user in article.likes.all():
+        if article.likes.filter(id=user.id).exists():
             article.likes.remove(user)
-            return Response({'liked': False})
+            return Response({
+                "message": "좋아요가 취소되었습니다.",
+                "like_count": article.likes.count()
+            })
         else:
             article.likes.add(user)
-            return Response({'liked': True})
+            return Response({
+                "message": "좋아요가 추가되었습니다.",
+                "like_count": article.likes.count()
+            })
 
     @action(detail=False, methods=['get'])
     def statistics(self, request):
