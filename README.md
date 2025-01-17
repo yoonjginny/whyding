@@ -7,6 +7,7 @@
 ## 👀 소개
 
 AI 웨딩 사진 합성 서비스
+https://youtu.be/jsCeGw4UZXE
 
 ## 🛠 기술 스택
 
