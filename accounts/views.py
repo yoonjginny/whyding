@@ -141,7 +141,7 @@ class ChangePasswordView(APIView):
             
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
-        return Response({"message": ("비밀번호가 변경되었습니다.")})
+        return Response({"message": "비밀번호가 변경되었습니다."})
 
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
@@ -195,7 +195,7 @@ class TokenVerifyView(APIView):
         }
     )
     def get(self, request):
-        return Response({"message": _("토큰이 유효합니다.")})
+        return Response({"message": "토큰이 유효합니다."})
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
