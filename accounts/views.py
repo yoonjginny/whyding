@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
+from django.utils import timezone
 from drf_yasg import openapi
 from .serializers import (
     SignupSerializer, 
@@ -14,9 +15,12 @@ from .serializers import (
     LogoutSerializer
 )
 from .models import User
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class SignupView(generics.CreateAPIView):
     serializer_class = SignupSerializer
+    parser_classes = (MultiPartParser, FormParser)
     permission_classes = [AllowAny]
     
     @swagger_auto_schema(
@@ -57,6 +61,7 @@ class SignupView(generics.CreateAPIView):
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
     
     @swagger_auto_schema(
         operation_summary="프로필 조회",
@@ -258,3 +263,18 @@ class LogoutView(APIView):
                 {"error": f"유효하지 않은 토큰입니다. 상세: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 200:
+            try:
+                User.objects.filter(email=request.data.get('email')).update(
+                    last_login=timezone.now()
+                )
+                print(f"Last login updated for user: {request.data.get('email')}")
+            except Exception as e:
+                print(f"Error updating last_login: {str(e)}")
+            
+        return response
