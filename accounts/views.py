@@ -10,7 +10,8 @@ from .serializers import (
     SignupSerializer, 
     UserSerializer, 
     ChangePasswordSerializer, 
-    DeleteAccountSerializer
+    DeleteAccountSerializer,
+    LogoutSerializer
 )
 from .models import User
 
@@ -199,9 +200,7 @@ class TokenVerifyView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-
-    class LogoutSerializer(serializers.Serializer):
-        refresh_token = serializers.CharField(required=True)
+    serializer_class = LogoutSerializer
 
     @swagger_auto_schema(
         operation_summary="로그아웃",
@@ -238,13 +237,24 @@ class LogoutView(APIView):
         }
     )
     def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"error": "로그아웃하려면 refresh_token이 필요합니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = serializer.validated_data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response({"message": "로그아웃되었습니다."})
-        except Exception:
+            
             return Response(
-                {"error": "유효하지 않은 토큰입니다."}, 
+                {"message": "로그아웃되었습니다."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"유효하지 않은 토큰입니다. 상세: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )

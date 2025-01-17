@@ -82,3 +82,9 @@ class DeleteAccountSerializer(serializers.Serializer):
         if not attrs.get('confirm_delete'):
             raise serializers.ValidationError({"confirm_delete": _("계정 삭제를 확인해주세요.")})
         return attrs
+
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(
+        required=True,
+        help_text='로그아웃할 refresh 토큰'
+    )

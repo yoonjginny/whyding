@@ -20,6 +20,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'drf_yasg',
     'corsheaders',
@@ -98,6 +100,9 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_BLACKLIST_GRACE_PERIOD': 0,
+    'ROTATE_REFRESH_TOKENS': False,
 }
 
 # Swagger settings
@@ -115,3 +120,6 @@ SWAGGER_SETTINGS = {
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
+
+# 블랙리스트된 토큰 자동 삭제 설정
+DJANGO_REFRESH_TOKEN_BLACKLIST_CLEAR_PERIOD = 60 * 60 * 24  # 1일 (초 단위)
