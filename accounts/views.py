@@ -126,7 +126,7 @@ class ChangePasswordView(APIView):
     def put(self, request, username):
         if request.user.username != username:
             return Response(
-                {"detail": _("권한이 없습니다.")}, 
+                {"detail": ("권한이 없습니다.")}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
@@ -135,13 +135,13 @@ class ChangePasswordView(APIView):
         
         if not request.user.check_password(serializer.validated_data['old_password']):
             return Response(
-                {"old_password": [_("현재 비밀번호가 올바르지 않습니다.")]}, 
+                {"old_password": [("현재 비밀번호가 올바르지 않습니다.")]}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
             
         request.user.set_password(serializer.validated_data['new_password'])
         request.user.save()
-        return Response({"message": _("비밀번호가 변경되었습니다.")})
+        return Response({"message": "비밀번호가 변경되었습니다."})
 
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
@@ -170,7 +170,7 @@ class DeleteAccountView(APIView):
         
         if not request.user.check_password(serializer.validated_data['password']):
             return Response(
-                {"password": [_("비밀번호가 올바르지 않습니다.")]}, 
+                {"password": [("비밀번호가 올바르지 않습니다.")]}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
             
@@ -195,7 +195,7 @@ class TokenVerifyView(APIView):
         }
     )
     def get(self, request):
-        return Response({"message": _("토큰이 유효합니다.")})
+        return Response({"message": "토큰이 유효합니다."})
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
