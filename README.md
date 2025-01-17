@@ -1,4 +1,8 @@
 ![logo](./images/logo/logo.svg)
+<div align="center"> 
+<img src="https://github.com/user-attachments/assets/38683997-2994-4681-a9bc-d531076a40fc" style="display: block; margin: 0 auto;" />
+</div>
+
 
 ## 👀 소개
 
