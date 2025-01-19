@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/articles/', include('articles.urls')),
     path('api/accounts/', include('accounts.urls')),
+    path('api/feedback/', include('feedback.urls')),
     
     # Swagger URL
     path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
