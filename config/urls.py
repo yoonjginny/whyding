@@ -6,6 +6,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from accounts.views import CustomTokenObtainPairView
+from django.http import HttpResponse
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -24,7 +25,18 @@ schema_view = get_schema_view(
     ],
 )
 
+def test_view(request):
+    try:
+        # 더 자세한 응답 반환
+        return HttpResponse(
+            f"Server is running!\nHost: {request.get_host()}\nPath: {request.path}",
+            status=200
+        )
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)
+
 urlpatterns = [
+    path('', test_view),  # 맨 위로 이동
     path('admin/', admin.site.urls),
     path('api/articles/', include('articles.urls')),
     path('api/accounts/', include('accounts.urls')),

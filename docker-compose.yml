@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 config.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 config.wsgi:application
     volumes:
       - .:/app
     ports:
@@ -9,8 +9,8 @@ services:
     depends_on:
       - db
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.prod
-      - DATABASE_URL=mysql://user:password@db:3306/dbname
+      - DATABASE_URL=mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 
   db:
     image: mariadb:latest
@@ -18,9 +18,9 @@ services:
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
 
 volumes:
-  mysql_data: 
+  db_data: 
