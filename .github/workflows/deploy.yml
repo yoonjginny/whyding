@@ -17,7 +17,8 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        debug: true
+        port: 22
+        timeout: 60s
         command_timeout: 200m
         script: |
           cd /home/ubuntu/whyding
