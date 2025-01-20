@@ -11,26 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Build, tag, and push image to Amazon ECR
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: your-repo-name
-        IMAGE_TAG: latest
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -38,6 +18,7 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker pull ${{ steps.login-ecr.outputs.registry }}/your-repo-name:latest
-          docker-compose down
-          docker-compose up -d
+          cd /home/ubuntu/whyding  # 프로젝트 디렉토리로 이동
+          git pull origin main      # 최신 코드 가져오기
+          docker-compose down       # 기존 컨테이너 중지
+          docker-compose up -d --build  # 새로운 이미지 빌드 및 컨테이너 시작
