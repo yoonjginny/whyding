@@ -35,10 +35,20 @@ class SignupSerializer(serializers.ModelSerializer):
         style={'input_type': 'password'},
         help_text='비밀번호를 다시 입력하세요. (필수)'
     )
+    profile_image = serializers.ImageField(
+        required=False,
+        help_text='프로필 이미지를 업로드하세요. (선택사항)',
+        use_url=True
+    )
+    introduction = serializers.CharField(
+        required=False,
+        help_text='자기소개를 입력하세요. (선택사항)',
+        allow_blank=True
+    )
     
     class Meta:
         model = User
-        fields = ['email', 'password', 'password_confirm', 'username']
+        fields = ['email', 'password', 'password_confirm', 'username', 'profile_image', 'introduction']
         extra_kwargs = {
             'email': {
                 'required': True,
@@ -56,12 +66,21 @@ class SignupSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        validated_data.pop('password_confirm')
+        password = validated_data.pop('password')
+        
+        profile_image = validated_data.get('profile_image', None)
+        
         user = User.objects.create(
             email=validated_data['email'],
-            username=validated_data['username']
+            username=validated_data['username'],
+            introduction=validated_data.get('introduction', ''),
+            profile_image=profile_image
         )
-        user.set_password(validated_data['password'])
+        
+        user.set_password(password)
         user.save()
+        
         return user
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -82,3 +101,9 @@ class DeleteAccountSerializer(serializers.Serializer):
         if not attrs.get('confirm_delete'):
             raise serializers.ValidationError({"confirm_delete": _("계정 삭제를 확인해주세요.")})
         return attrs
+
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(
+        required=True,
+        help_text='로그아웃할 refresh 토큰'
+    )
