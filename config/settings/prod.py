@@ -7,7 +7,7 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '52.79.162.173']
+ALLOWED_HOSTS = ['52.79.162.173']
 
 # Security settings
 SECURE_SSL_REDIRECT = True
