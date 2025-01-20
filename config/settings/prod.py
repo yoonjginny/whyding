@@ -7,10 +7,7 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    '52.79.162.173',
-    'whyding.site',
-]
+ALLOWED_HOSTS = ['whyding.site', 'www.whyding.site', 'localhost', '127.0.0.1', 'ec2-52-79-162-173.ap-northeast-2.compute.amazonaws.com']
 
 # Security settings
 SECURE_SSL_REDIRECT = True
