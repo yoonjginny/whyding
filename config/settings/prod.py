@@ -7,12 +7,17 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['52.79.162.173']
+ALLOWED_HOSTS = [
+    '52.79.162.173',
+    'localhost',
+    '0.0.0.0',
+    '127.0.0.1'
+]
 
 # Security settings
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
@@ -31,7 +36,16 @@ DATABASES = {
     }
 }
 
-# CORS settings
+# # CORS settings
+# CORS_ALLOWED_ORIGINS = [
+#     os.getenv('CORS_ALLOWED_ORIGIN'),
+# ]
+
+# os.getenv('CORS_ALLOWED_ORIGIN') 대신 직접 리스트로 설정
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('CORS_ALLOWED_ORIGIN'),
+    "http://localhost:8000",
+    "http://52.79.162.173:8000",
 ]
+
+# 또는 개발 중에는 모든 origin 허용
+CORS_ALLOW_ALL_ORIGINS = True
