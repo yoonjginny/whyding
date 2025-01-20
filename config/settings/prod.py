@@ -33,16 +33,7 @@ DATABASES = {
     }
 }
 
-# # CORS settings
-# CORS_ALLOWED_ORIGINS = [
-#     os.getenv('CORS_ALLOWED_ORIGIN'),
-# ]
-
-# os.getenv('CORS_ALLOWED_ORIGIN') 대신 직접 리스트로 설정
+# CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://52.79.162.173:8000",
+    os.getenv('CORS_ALLOWED_ORIGIN'),
 ]
-
-# 또는 개발 중에는 모든 origin 허용
-CORS_ALLOW_ALL_ORIGINS = True
