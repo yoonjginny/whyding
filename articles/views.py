@@ -3,7 +3,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Article, Comment
-from .serializers import ArticleSerializer, ArticleListSerializer, ArticleDetailSerializer, CommentSerializer
+from .serializers import ArticleSerializer, ArticleListSerializer, ArticleDetailSerializer, CommentSerializer, ArticleLikeSerializer
 from rest_framework import permissions, generics
 from rest_framework.exceptions import ValidationError
 from django_filters import rest_framework as django_filters
@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db import models
+from drf_yasg.utils import swagger_auto_schema, no_body
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -112,30 +113,38 @@ class ArticleViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
     
+    @swagger_auto_schema(
+        method='post',
+        request_body=no_body,
+        responses={
+            200: ArticleLikeSerializer(),
+            400: "Bad Request",
+            401: "Unauthorized"
+        },
+        operation_description="게시물 좋아요 토글 (추가/제거)"
+    )
     @action(
         detail=True, 
-        methods=['post'], 
-        serializer_class=None  # Request Body가 필요없으므로 None으로 설정
+        methods=['post'],
+        serializer_class=ArticleLikeSerializer,
     )
     def like(self, request, pk=None):
-        """
-        게시물 좋아요 토글 (추가/제거)
-        """
+        """게시물 좋아요 토글 (추가/제거)"""
         article = self.get_object()
         user = request.user
         
         if article.likes.filter(id=user.id).exists():
             article.likes.remove(user)
-            return Response({
-                "message": "좋아요가 취소되었습니다.",
-                "like_count": article.likes.count()
-            })
+            message = "좋아요가 취소되었습니다."
         else:
             article.likes.add(user)
-            return Response({
-                "message": "좋아요가 추가되었습니다.",
-                "like_count": article.likes.count()
-            })
+            message = "좋아요가 추가되었습니다."
+        
+        serializer = ArticleLikeSerializer({
+            'message': message,
+            'like_count': article.likes.count()
+        })
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def statistics(self, request):
