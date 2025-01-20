@@ -2,6 +2,13 @@ FROM python:3.10
 
 WORKDIR /app
 
+# 가상환경 생성 및 활성화
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Django 설정 모듈 강제 지정
+ENV DJANGO_SETTINGS_MODULE=config.settings.prod
+
 # 시스템 패키지 업데이트 및 필요한 패키지 설치
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
