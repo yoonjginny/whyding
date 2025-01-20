@@ -33,5 +33,5 @@ DATABASES = {
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('CORS_ALLOWED_ORIGIN', "https://your-frontend-domain.com"),
+    os.getenv('CORS_ALLOWED_ORIGIN'),
 ]
