@@ -17,8 +17,13 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        timeout: 60s
+        command_timeout: 200m
         script: |
-          cd /home/ubuntu/whyding  # 프로젝트 디렉토리로 이동
-          git pull origin main      # 최신 코드 가져오기
-          docker-compose down       # 기존 컨테이너 중지
-          docker-compose up -d --build  # 새로운 이미지 빌드 및 컨테이너 시작
+          cd /home/ubuntu/whyding
+          git pull origin main
+          docker-compose down
+          docker-compose up -d --build
+          docker ps
+          docker-compose logs
