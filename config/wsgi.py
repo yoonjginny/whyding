@@ -10,6 +10,9 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.core.wsgi import get_wsgi_application
+from django.conf import settings
+from config import settings as my_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,7 +22,8 @@ ENV_PATH = BASE_DIR / '.env'
 if ENV_PATH.exists():
     load_dotenv(ENV_PATH)
 
-from django.core.wsgi import get_wsgi_application
+# settings 직접 설정
+if not settings.configured:
+    settings.configure(default_settings=my_settings)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.prod')
 application = get_wsgi_application()
