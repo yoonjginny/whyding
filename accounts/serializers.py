@@ -66,18 +66,16 @@ class SignupSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
+        # password와 password_confirm 추출
         password = validated_data.pop('password')
+        validated_data.pop('password_confirm', None)
         
-        profile_image = validated_data.get('profile_image', None)
-        
-        user = User.objects.create(
-            email=validated_data['email'],
+        user = User.objects.create_user(
             username=validated_data['username'],
-            introduction=validated_data.get('introduction', ''),
-            profile_image=profile_image
+            email=validated_data.get('email', ''),
+            profile_image=validated_data.get('profile_image', None),
+            introduction=validated_data.get('introduction', '')
         )
-        
         user.set_password(password)
         user.save()
         
