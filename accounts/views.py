@@ -15,13 +15,13 @@ from .serializers import (
     LogoutSerializer
 )
 from .models import User
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 class SignupView(generics.CreateAPIView):
     serializer_class = SignupSerializer
-    parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [AllowAny]
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
+    permission_classes = []
     
     @swagger_auto_schema(
         operation_summary="회원가입",
@@ -50,6 +50,7 @@ class SignupView(generics.CreateAPIView):
             )
         }
     )
+    
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
