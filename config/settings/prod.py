@@ -7,7 +7,7 @@ load_dotenv()
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['whyding.site', 'www.whyding.site', 'localhost', '127.0.0.1', 'ec2-52-79-162-173.ap-northeast-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['whyding.site']
 
 # Security settings
 SECURE_SSL_REDIRECT = True
@@ -32,7 +32,9 @@ DATABASES = {
     }
 }
 
-# CORS settings
-CORS_ALLOWED_ORIGINS = [
-    os.getenv('CORS_ALLOWED_ORIGIN'),
-]
+# # CORS settings
+# CORS_ALLOWED_ORIGINS = [
+#     os.getenv('CORS_ALLOWED_ORIGIN'),
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True

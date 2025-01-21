@@ -13,28 +13,21 @@ schema_view = get_schema_view(
         title="API 문서",
         default_version='v1',
         description="API 설명",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
-    patterns=[
-        path('api/articles/', include('articles.urls')),
-        path('api/accounts/', include('accounts.urls')),
-    ],
 )
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/articles/', include('articles.urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/feedback/', include('feedback.urls')),
-    
-    # Swagger URL
-    path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('api/accounts/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('health/', health_check, name='health_check'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
