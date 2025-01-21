@@ -7,7 +7,7 @@ load_dotenv()
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '52.79.162.173']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '52.79.162.173', 'whyding.site']
 
 # Database
 DATABASES = {
