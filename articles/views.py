@@ -14,7 +14,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
 from django.db import models
 from drf_yasg.utils import swagger_auto_schema, no_body
 
@@ -50,7 +49,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filterset_class = ArticleFilter
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
-    parser_classes = (MultiPartParser, FormParser)
     serializer_class = ArticleSerializer
 
     def get_queryset(self):
