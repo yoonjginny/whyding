@@ -103,6 +103,13 @@ class ArticleViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         
+        # 작성자 확인
+        if instance.author != request.user:
+            return Response(
+                {"detail": "자신의 게시물만 수정할 수 있습니다."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         if instance.image and request.FILES.get('image'):
             instance.image.delete()
             
