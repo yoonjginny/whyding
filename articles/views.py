@@ -20,8 +20,11 @@ from drf_yasg.utils import swagger_auto_schema, no_body
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        # GET, HEAD, OPTIONS 요청은 누구나 허용
         if request.method in permissions.SAFE_METHODS:
             return True
+            
+        # PUT, PATCH, DELETE 요청은 작성자만 허용
         return obj.author == request.user
 
 class ArticleFilter(django_filters.FilterSet):
@@ -40,7 +43,7 @@ class ArticleFilter(django_filters.FilterSet):
             ).order_by('-created_at')
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         filters.SearchFilter,
