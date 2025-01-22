@@ -20,8 +20,11 @@ from drf_yasg.utils import swagger_auto_schema, no_body
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        # GET, HEAD, OPTIONS 요청은 누구나 허용
         if request.method in permissions.SAFE_METHODS:
             return True
+            
+        # PUT, PATCH, DELETE 요청은 작성자만 허용
         return obj.author == request.user
 
 class ArticleFilter(django_filters.FilterSet):
@@ -40,7 +43,7 @@ class ArticleFilter(django_filters.FilterSet):
             ).order_by('-created_at')
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         filters.SearchFilter,
@@ -102,13 +105,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        
-        # 작성자 확인
-        if instance.author != request.user:
-            return Response(
-                {"detail": "자신의 게시물만 수정할 수 있습니다."},
-                status=status.HTTP_403_FORBIDDEN
-            )
         
         if instance.image and request.FILES.get('image'):
             instance.image.delete()
