@@ -3,6 +3,8 @@ from django.contrib.auth.password_validation import validate_password
 from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(use_url=True)
+    
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'profile_image', 'introduction']
