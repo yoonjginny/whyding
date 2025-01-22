@@ -61,6 +61,9 @@ class SignupView(generics.CreateAPIView):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
     
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     @swagger_auto_schema(
         operation_summary="프로필 조회",
         responses={
@@ -71,7 +74,10 @@ class ProfileView(APIView):
         }
     )
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(
+            request.user,
+            context=self.get_serializer_context()  # context 추가
+        )
         return Response(serializer.data)
     
     @swagger_auto_schema(
@@ -94,7 +100,12 @@ class ProfileView(APIView):
         }
     )
     def put(self, request):
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer = UserSerializer(
+            request.user, 
+            data=request.data, 
+            partial=True,
+            context=self.get_serializer_context()  # context 추가
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
