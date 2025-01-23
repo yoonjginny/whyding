@@ -32,8 +32,8 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = [
             'id', 'author', 'title', 'content',
-            'is_public', 'image', 'view_count',
-            'like_count', 'created_at', 'updated_at'
+            'image', 'is_public', 'like_count',
+            'view_count', 'created_at', 'updated_at'
         ]
         extra_kwargs = {
             'title': {
@@ -62,8 +62,9 @@ class ArticleSerializer(serializers.ModelSerializer):
 class ArticleListSerializer(ArticleSerializer):
     class Meta(ArticleSerializer.Meta):
         fields = [
-            'id', 'author', 'title', 'is_public',
-            'view_count', 'like_count', 'created_at'
+            'id', 'author', 'title', 'content',
+            'image', 'is_public', 'like_count',
+            'view_count', 'created_at', 'updated_at'
         ]
 
 class ArticleDetailSerializer(ArticleSerializer):

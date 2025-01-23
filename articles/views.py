@@ -14,15 +14,17 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
 from django.db import models
 from drf_yasg.utils import swagger_auto_schema, no_body
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        # GET, HEAD, OPTIONS 요청은 누구나 허용
         if request.method in permissions.SAFE_METHODS:
             return True
+            
+        # PUT, PATCH, DELETE 요청은 작성자만 허용
         return obj.author == request.user
 
 class ArticleFilter(django_filters.FilterSet):
@@ -41,7 +43,7 @@ class ArticleFilter(django_filters.FilterSet):
             ).order_by('-created_at')
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     filter_backends = [
         django_filters.DjangoFilterBackend,
         filters.SearchFilter,
@@ -50,7 +52,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filterset_class = ArticleFilter
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'view_count', 'likes_count']
-    parser_classes = (MultiPartParser, FormParser)
     serializer_class = ArticleSerializer
 
     def get_queryset(self):
@@ -126,6 +127,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, 
         methods=['post'],
+        permission_classes=[IsAuthenticated],
         serializer_class=ArticleLikeSerializer,
     )
     def like(self, request, pk=None):

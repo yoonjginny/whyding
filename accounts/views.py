@@ -12,15 +12,13 @@ from .serializers import (
     UserSerializer, 
     ChangePasswordSerializer, 
     DeleteAccountSerializer,
-    LogoutSerializer
+    LogoutSerializer,
 )
 from .models import User
-from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 class SignupView(generics.CreateAPIView):
     serializer_class = SignupSerializer
-    parser_classes = (JSONParser, MultiPartParser, FormParser)
     permission_classes = []
     
     @swagger_auto_schema(
@@ -62,8 +60,10 @@ class SignupView(generics.CreateAPIView):
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = (MultiPartParser, FormParser)
     
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     @swagger_auto_schema(
         operation_summary="프로필 조회",
         responses={
@@ -74,7 +74,10 @@ class ProfileView(APIView):
         }
     )
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(
+            request.user,
+            context=self.get_serializer_context()  # context 추가
+        )
         return Response(serializer.data)
     
     @swagger_auto_schema(
@@ -97,10 +100,16 @@ class ProfileView(APIView):
         }
     )
     def put(self, request):
-        serializer = UserSerializer(request.user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        serializer = UserSerializer(
+            request.user, 
+            data=request.data, 
+            partial=True,
+            context=self.get_serializer_context()  # context 추가
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response({"detail": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
