@@ -127,6 +127,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, 
         methods=['post'],
+        permission_classes=[IsAuthenticated],
         serializer_class=ArticleLikeSerializer,
     )
     def like(self, request, pk=None):
