@@ -207,7 +207,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 팀 정보
 
-| 이름          | 역할           | 블로그 주소                       | GitHub 주소                      |
+| 이름          | 역할           | 블로그                       | GitHub                    |
 |---------------|----------------|------------------------------------|-----------------------------------|
 | 박윤지       | 팀장, FE        | [https://ginny773.tistory.com/](https://ginny773.tistory.com/) | [https://github.com/yoonjginny](https://github.com/yoonjginny) |
 | 김민철       | 부팀장, FE  | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) |
