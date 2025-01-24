@@ -209,10 +209,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 | 이름          | 역할           | 블로그 주소                       | GitHub 주소                      |
 |---------------|----------------|------------------------------------|-----------------------------------|
-| 박윤지       | FE        | [blog1](https://ginny773.tistory.com/) | [github.com/1](https://github.com/yoonjginny) |
-| 김민철       | FE  | [blog2](https://github.com/missal-botanic/TIL) | [github.com/2](https://github.com/missal-botanic/TIL) |
-| 이규혁       | BE | [blog3]() | [github.com/3]() |
-| 김광림         | BE       | [blog4](https://bgt30.tistory.com/) | [github.com/4](https://github.com/bgt30) |
+| 박윤지       | 팀장, FE        | [https://ginny773.tistory.com/](https://ginny773.tistory.com/) | [https://github.com/yoonjginny](https://github.com/yoonjginny) |
+| 김민철       | 부팀장, FE  | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) |
+| 이규혁       | 팀원, BE | [blog]() | [github.com/]() |
+| 김광림         | 팀원, BE       | [https://bgt30.tistory.com/](https://bgt30.tistory.com/) | [https://github.com/bgt30](https://github.com/bgt30) |
 
 
 ## 🔜 향후 계획
