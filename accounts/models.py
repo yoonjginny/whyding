@@ -2,6 +2,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
+    PROVIDER_CHOICES = (
+        ('naver', '네이버'),
+        ('kakao', '카카오'),
+        ('google', '구글'),
+        ('email', '이메일'),
+    )
+
     email = models.EmailField(
         unique=True,
         error_messages={
@@ -21,13 +28,22 @@ class User(AbstractUser):
     )
     username = models.CharField(
         max_length=150,
-        unique=True,
+        unique=False,
         help_text='사용자 이름을 입력하세요. (필수)',
         error_messages={
             'unique': '이미 사용 중인 사용자 이름입니다.'
         }
     )
-
+    provider = models.CharField(
+        max_length=20, 
+        choices=PROVIDER_CHOICES, 
+        default='email'
+    )
+    social_id = models.CharField(
+        max_length=100, 
+        null=True, 
+        blank=True
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 

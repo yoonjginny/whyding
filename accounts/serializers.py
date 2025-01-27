@@ -4,11 +4,11 @@ from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     profile_image = serializers.ImageField(use_url=True)
-    
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'profile_image', 'introduction']
-        read_only_fields = ['id', 'email']
+        fields = ['id', 'email', 'username', 'profile_image', 'introduction', 'provider', 'social_id']
+        read_only_fields = ['id', 'email', 'provider', 'social_id']
         extra_kwargs = {
             'profile_image': {
                 'required': False,
@@ -47,10 +47,10 @@ class SignupSerializer(serializers.ModelSerializer):
         help_text='자기소개를 입력하세요. (선택사항)',
         allow_blank=True
     )
-    
+
     class Meta:
         model = User
-        fields = ['email', 'password', 'password_confirm', 'username', 'profile_image', 'introduction']
+        fields = ['email', 'password', 'password_confirm', 'username', 'profile_image', 'introduction', 'provider', 'social_id']
         extra_kwargs = {
             'email': {
                 'required': True,
@@ -59,30 +59,35 @@ class SignupSerializer(serializers.ModelSerializer):
             'username': {
                 'required': True,
                 'help_text': '사용자 이름을 입력하세요. (필수)'
-            }
+            },
+            'provider': {'read_only': True},
+            'social_id': {'read_only': True}
         }
-    
+
     def validate(self, attrs):
         if attrs['password'] != attrs.pop('password_confirm'):
-            raise serializers.ValidationError({"password": _("비밀번호가 일치하지 않습니다.")})
+            raise serializers.ValidationError({"password": "비밀번호가 일치하지 않습니다."})
         return attrs
 
     def create(self, validated_data):
         # password와 password_confirm 추출
         password = validated_data.pop('password')
         validated_data.pop('password_confirm', None)
-        
-        user = User.objects.create_user(
+        profile_image = validated_data.get('profile_image', None)
+
+        user = User.objects.create(
+            email=validated_data['email'],
             username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            profile_image=validated_data.get('profile_image', None),
-            introduction=validated_data.get('introduction', '')
+            introduction=validated_data.get('introduction', ''),
+            profile_image=profile_image,
+            provider='email'
         )
+
         user.set_password(password)
         user.save()
-        
-        return user
 
+        return user
+    
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True, style={'input_type': 'password'})
     new_password = serializers.CharField(required=True, validators=[validate_password], style={'input_type': 'password'})
@@ -90,7 +95,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password_confirm']:
-            raise serializers.ValidationError({"new_password": _("새 비밀번호가 일치하지 않습니다.")})
+            raise serializers.ValidationError({"new_password": "새 비밀번호가 일치하지 않습니다."})
         return attrs
 
 class DeleteAccountSerializer(serializers.Serializer):
@@ -99,7 +104,7 @@ class DeleteAccountSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if not attrs.get('confirm_delete'):
-            raise serializers.ValidationError({"confirm_delete": _("계정 삭제를 확인해주세요.")})
+            raise serializers.ValidationError({"confirm_delete": "계정 삭제를 확인해주세요."})
         return attrs
 
 class LogoutSerializer(serializers.Serializer):

@@ -49,6 +49,15 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+NAVER_CLIENT_ID = 'YA4NsEZxMnzxSkRs50Jb'
+NAVER_CLIENT_SECRET = '1XxUR7oopV'
+NAVER_REDIRECT_URI = 'http://localhost:8000/api/accounts/naver/callback/'
+KAKAO_CLIENT_ID = 'd57472fec2ded003fa05be6d7cf547b1'
+KAKAO_REDIRECT_URI = 'http://localhost:8000/api/accounts/kakao/callback/'
+GOOGLE_CLIENT_ID = '878988763702-5140r9cj6a51jbun7ucp8e6d5q32h58k.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_REDIRECT_URI = 'http://localhost:8000/api/accounts/google/callback/'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -159,6 +168,21 @@ SWAGGER_SETTINGS = {
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
 
 # 블랙리스트된 토큰 자동 삭제 설정
 DJANGO_REFRESH_TOKEN_BLACKLIST_CLEAR_PERIOD = 60 * 60 * 24  # 1일 (초 단위)
