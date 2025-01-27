@@ -1,4 +1,6 @@
-![logo](./images/logo/logo.svg)
+<img src="./images/logo/logo.svg" alt="logo" width="1000" height="100">
+
+
 <div align="center"> 
 <img src="https://github.com/user-attachments/assets/38683997-2994-4681-a9bc-d531076a40fc" style="display: block; margin: 0 auto;" />
 </div>
@@ -18,8 +20,6 @@ AI 웨딩 사진 합성 서비스
 - **Web Server**: Nginx
 - **Server**: AWS EC2
 - **WSGI Server**: Gunicorn
-- **Docker**: Docker
-- **CI/CD**: GitHub Actions
 - **OS**: Ubuntu 22.04
 
 ## 🌐 아키텍처
@@ -30,14 +30,16 @@ AI 웨딩 사진 합성 서비스
 
 ### 1. 사용자 관리
 - 회원가입/로그인 (JWT 기반 인증)
+- 소셜 로그인 (Naver, Kakao, Google)
 - 프로필 관리 (이미지 업로드 포함)
 - 비밀번호 변경
 - 계정 삭제
 
 ### 2. 게시물 관리
+- 페이스 스왑
+- 이미지 관리
 - CRUD 기능
 - 이미지 업로드
-- 태그 기능
 - 좋아요 기능
 - 조회수 기능
 - 공개/비공개 설정
@@ -50,6 +52,9 @@ AI 웨딩 사진 합성 서비스
 - 태그 기반 검색
 - 통계 기능
 - 페이지네이션
+
+### 5. 피드백 시스템
+- 피드백 작성
 
 ## ⛓️ERD
 
@@ -153,6 +158,26 @@ python manage.py runserver
 - Swagger UI: `/swagger/`
 - ReDoc: `/redoc/`
 
+## 🔑 소셜 로그인 설정
+
+### 네이버
+1. [네이버 개발자 센터](https://developers.naver.com/) 접속
+2. 애플리케이션 등록
+3. Client ID와 Secret 발급
+4. Callback URL 설정: `http://[domain]/api/accounts/naver/callback/`
+
+### 카카오
+1. [카카오 개발자 센터](https://developers.kakao.com/) 접속
+2. 애플리케이션 등록
+3. REST API 키 발급
+4. Redirect URI 설정: `http://[domain]/api/accounts/kakao/callback/`
+
+### 구글
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속
+2. 프로젝트 생성
+3. OAuth 2.0 클라이언트 ID 생성
+4. 승인된 리디렉션 URI 설정: `http://[domain]/api/accounts/google/callback/`
+
 ## 🧪 테스트
 
 ```bash
@@ -179,6 +204,14 @@ whyding/
 ├── media/            # 미디어 파일
 └── requirements.txt  # 의존성 목록
 ```
+
+## 🔒 환경 변수 설정
+
+- NAVER_CLIENT_ID=your_naver_client_id
+- NAVER_CLIENT_SECRET=your_naver_client_secret
+- KAKAO_CLIENT_ID=your_kakao_client_id
+- GOOGLE_CLIENT_ID=your_google_client_id
+- GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 ## 🔐 보안
 
@@ -211,15 +244,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 |---------------|----------------|------------------------------------|-----------------------------------|
 | 박윤지       | 팀장, FE        | [https://ginny773.tistory.com/](https://ginny773.tistory.com/) | [https://github.com/yoonjginny](https://github.com/yoonjginny) |
 | 김민철       | 부팀장, FE  | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) |
-| 이규혁       | 팀원, BE | [blog]() | [github.com/]() |
+| 이규혁       | 팀원, BE | [https://hyuk926.tistory.com/](https://hyuk926.tistory.com/) | [https://github.com/laonking](https://github.com/laonking) |
 | 김광림         | 팀원, BE       | [https://bgt30.tistory.com/](https://bgt30.tistory.com/) | [https://github.com/bgt30](https://github.com/bgt30) |
 
 
 ## 🔜 향후 계획
 
-- [ ] 소셜 로그인
 - [ ] 알림 시스템
 - [ ] 실시간 채팅
+- [ ] 태그 기능
 
 ## ⚠️ 알려진 이슈
 
