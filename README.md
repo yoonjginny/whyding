@@ -11,16 +11,20 @@ AI 웨딩 사진 합성 서비스
 
 ## 🛠 기술 스택
 
-- **Backend**: Django 5.1.4, Django REST Framework 3.15.2
+- **Frontend**: HTML, CSS, Bootstrap, JS
+- **Backend**: Python, Django 5.1.4, Django REST Framework 3.15.2
+- **AI**: Stable Diffusion
 - **Database**: MariaDB
-- **Authentication**: JWT (djangorestframework-simplejwt)
-- **Documentation**: Swagger/OpenAPI (drf-yasg)
-- **Testing**: Django Test Framework, Coverage
-- **Image Processing**: Pillow
+- **Web Server**: Nginx
+- **Server**: AWS EC2
+- **WSGI Server**: Gunicorn
+- **Docker**: Docker
+- **CI/CD**: GitHub Actions
+- **OS**: Ubuntu 22.04
 
 ## 🌐 아키텍처
 
-![Architecture](./images/architecture_v2.drawio.png)
+![Architecture](./images/architecture_v3.drawio.png)
 
 ## 📋 주요 기능
 
@@ -170,6 +174,7 @@ coverage html
 whyding/
 ├── accounts/          # 사용자 관리
 ├── articles/          # 게시물 관리
+├── feedback/          # 피드백 관리
 ├── config/           # 프로젝트 설정
 ├── media/            # 미디어 파일
 └── requirements.txt  # 의존성 목록
@@ -202,8 +207,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 팀 정보
 
-- 개발자 정보
-- 연락처
+| 이름          | 역할           | 블로그                       | GitHub                    |
+|---------------|----------------|------------------------------------|-----------------------------------|
+| 박윤지       | 팀장, FE        | [https://ginny773.tistory.com/](https://ginny773.tistory.com/) | [https://github.com/yoonjginny](https://github.com/yoonjginny) |
+| 김민철       | 부팀장, FE  | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) |
+| 이규혁       | 팀원, BE | [blog]() | [github.com/]() |
+| 김광림         | 팀원, BE       | [https://bgt30.tistory.com/](https://bgt30.tistory.com/) | [https://github.com/bgt30](https://github.com/bgt30) |
+
 
 ## 🔜 향후 계획
 
