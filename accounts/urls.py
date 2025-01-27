@@ -1,6 +1,5 @@
 from django.urls import path
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
 from .views import (
@@ -11,6 +10,12 @@ from .views import (
     TokenVerifyView,
     LogoutView,
     CustomTokenObtainPairView,
+    NaverLoginView,
+    NaverCallbackView,
+    KakaoLoginView,
+    KakaoCallbackView,
+    GoogleLoginView,
+    GoogleCallbackView,
 )
 
 urlpatterns = [
@@ -22,4 +27,10 @@ urlpatterns = [
     path('delete/', DeleteAccountView.as_view(), name='delete-account'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('naver/login/', NaverLoginView.as_view(), name='naver-login'),
+    path('naver/callback/', NaverCallbackView.as_view(), name='naver-callback'),
+    path('kakao/login/', KakaoLoginView.as_view(), name='kakao-login'),
+    path('kakao/callback/', KakaoCallbackView.as_view(), name='kakao-callback'),
+    path('google/login/', GoogleLoginView.as_view(), name='google-login'),
+    path('google/callback/', GoogleCallbackView.as_view(), name='google-callback'),
 ]
