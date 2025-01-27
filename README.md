@@ -211,7 +211,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 |---------------|----------------|------------------------------------|-----------------------------------|
 | 박윤지       | 팀장, FE        | [https://ginny773.tistory.com/](https://ginny773.tistory.com/) | [https://github.com/yoonjginny](https://github.com/yoonjginny) |
 | 김민철       | 부팀장, FE  | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) | [https://github.com/missal-botanic/TIL](https://github.com/missal-botanic/TIL) |
-| 이규혁       | 팀원, BE | [blog]() | [github.com/]() |
+| 이규혁       | 팀원, BE | [https://hyuk926.tistory.com/](https://hyuk926.tistory.com/) | [https://github.com/laonking](https://github.com/laonking) |
 | 김광림         | 팀원, BE       | [https://bgt30.tistory.com/](https://bgt30.tistory.com/) | [https://github.com/bgt30](https://github.com/bgt30) |
 
 
