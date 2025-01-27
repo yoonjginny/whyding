@@ -1,4 +1,6 @@
-![logo](./images/logo/logo.svg)
+<img src="./images/logo/logo.svg" alt="logo" width="300" height="100">
+
+
 <div align="center"> 
 <img src="https://github.com/user-attachments/assets/38683997-2994-4681-a9bc-d531076a40fc" style="display: block; margin: 0 auto;" />
 </div>
