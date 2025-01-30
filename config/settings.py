@@ -51,12 +51,12 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 NAVER_CLIENT_ID = 'YA4NsEZxMnzxSkRs50Jb'
 NAVER_CLIENT_SECRET = '1XxUR7oopV'
-NAVER_REDIRECT_URI = 'https://rr720.synology.me/whyding/api/accounts/naver/callback/'
+NAVER_REDIRECT_URI = 'https://rr720.synology.me/whyding/'
 KAKAO_CLIENT_ID = 'd57472fec2ded003fa05be6d7cf547b1'
-KAKAO_REDIRECT_URI = 'https://rr720.synology.me/whyding/api/accounts/kakao/callback/'
+KAKAO_REDIRECT_URI = 'https://rr720.synology.me/whyding/'
 GOOGLE_CLIENT_ID = '878988763702-5140r9cj6a51jbun7ucp8e6d5q32h58k.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
-GOOGLE_REDIRECT_URI = 'https://rr720.synology.me/whyding/api/accounts/google/callback/'
+GOOGLE_REDIRECT_URI = 'https://rr720.synology.me/whyding/'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
