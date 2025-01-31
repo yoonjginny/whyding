@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.views import APIView
 from django.db import models
 from drf_yasg.utils import swagger_auto_schema, no_body
+from drf_yasg import openapi
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
@@ -71,6 +72,15 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 return ArticleDetailSerializer
             return ArticleSerializer
     
+    @swagger_auto_schema(
+        method='get',
+        operation_summary="사용자 본인의 게시물 조회",
+        operation_description="현재 로그인한 사용자가 작성한 게시물 목록을 조회합니다.",
+        responses={
+            200: ArticleListSerializer(many=True),
+            401: "Unauthorized"
+        }
+    )
     @action(detail=False, methods=['get'])
     def my_articles(self, request):
         """사용자 본인의 게시물만 조회"""
@@ -83,6 +93,15 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        method='get',
+        operation_summary="공개된 게시물 조회",
+        operation_description="공개된 게시물 목록을 조회합니다.",
+        responses={
+            200: ArticleListSerializer(many=True),
+            401: "Unauthorized"
+        }
+    )
     @action(detail=False, methods=['get'])
     def public_articles(self, request):
         """공개된 게시물만 조회"""
@@ -148,6 +167,25 @@ class ArticleViewSet(viewsets.ModelViewSet):
         })
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        method='get',
+        operation_summary="게시물 통계 조회",
+        operation_description="전체 게시물 수, 댓글 수, 가장 많이 좋아요를 받은 게시물 목록을 조회합니다.",
+        responses={
+            200: openapi.Response(
+                description="통계 데이터",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'total_articles': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'total_comments': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'most_liked': openapi.Schema(type=openapi.TYPE_ARRAY, items=ArticleListSerializer),
+                    }
+                )
+            ),
+            401: "Unauthorized"
+        }
+    )
     @action(detail=False, methods=['get'])
     def statistics(self, request):
         stats = Article.objects.aggregate(
@@ -182,52 +220,98 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-class CommentListCreateView(APIView):
+class CommentView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self, article_id):
+        """특정 게시물의 댓글 목록을 반환하는 쿼리셋"""
         return Comment.objects.filter(article_id=article_id)\
             .select_related('author')\
             .prefetch_related('replies__author')
 
-    def get(self, request, id):
-        comments = self.get_queryset(id)
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+    def get_object(self, article_id, pk):
+        """특정 댓글 객체를 반환"""
+        return get_object_or_404(Comment, article_id=article_id, pk=pk)
 
-    def post(self, request, id):
-        article = get_object_or_404(Article, id=id)
+    def get(self, request, article_id, pk=None):
+        """
+        댓글 목록 조회 (GET /articles/<article_id>/comments/)
+        특정 댓글 조회 (GET /articles/<article_id>/comments/<pk>/)
+        """
+        if pk:
+            # 특정 댓글 조회
+            comment = self.get_object(article_id, pk)
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data)
+        else:
+            # 댓글 목록 조회
+            comments = self.get_queryset(article_id)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+
+    @swagger_auto_schema(
+        method='post',
+        operation_summary="댓글 생성",
+        operation_description="특정 게시물에 새로운 댓글을 생성합니다.",
+        request_body=CommentSerializer,
+        responses={
+            201: CommentSerializer(),
+            400: "Bad Request",
+            401: "Unauthorized"
+        }
+    )
+    def post(self, request, article_id):
+        """
+        댓글 생성 (POST /articles/<article_id>/comments/)
+        """
+        article = get_object_or_404(Article, id=article_id)
         serializer = CommentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(author=request.user, article=article)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class CommentDetailView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get_object(self, article_id, pk):
-        return get_object_or_404(Comment, article_id=article_id, pk=pk)
-
-    def get(self, request, id, pk):
-        comment = self.get_object(id, pk)
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
-
-    def put(self, request, id, pk):
-        comment = self.get_object(id, pk)
+    @swagger_auto_schema(
+        method='put',
+        operation_summary="댓글 수정",
+        operation_description="특정 댓글을 수정합니다.",
+        request_body=CommentSerializer,
+        responses={
+            200: CommentSerializer(),
+            400: "Bad Request",
+            401: "Unauthorized",
+            403: "Forbidden"
+        }
+    )
+    def put(self, request, article_id, pk):
+        """
+        댓글 수정 (PUT /articles/<article_id>/comments/<pk>/)
+        """
+        comment = self.get_object(article_id, pk)
         if request.user != comment.author:
             return Response(
                 {"detail": "권한이 없습니다."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
         serializer = CommentSerializer(comment, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
-    def delete(self, request, id, pk):
-        comment = self.get_object(id, pk)
+    @swagger_auto_schema(
+        method='delete',
+        operation_summary="댓글 삭제",
+        operation_description="특정 댓글을 삭제합니다.",
+        responses={
+            204: "No Content",
+            401: "Unauthorized",
+            403: "Forbidden"
+        }
+    )
+    def delete(self, request, article_id, pk):
+        """
+        댓글 삭제 (DELETE /articles/<article_id>/comments/<pk>/)
+        """
+        comment = self.get_object(article_id, pk)
         if request.user != comment.author:
             return Response(
                 {"detail": "권한이 없습니다."},
