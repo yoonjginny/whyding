@@ -75,4 +75,7 @@ class Comment(models.Model):
         ordering = ['created_at']
 
     def __str__(self):
-        return f'{self.author.username}: {self.content[:30]}'
+        content = self.content[:30]
+        if len(self.content) > 30:
+            content += '...'
+        return f'{self.author.username}: {content}'

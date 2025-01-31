@@ -119,13 +119,20 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return self.public_articles(request)
     
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author=self.request.user, is_public=True)  # 기본적으로 공개 상태로 저장
     
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         
         if instance.image and request.FILES.get('image'):
+            # 이미지 파일 형식 및 크기 검증
+            image = request.FILES['image']
+            if image.size > 5 * 1024 * 1024:  # 5MB 제한
+                return Response(
+                    {"detail": "이미지 크기는 5MB를 초과할 수 없습니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             instance.image.delete()
             
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -225,7 +232,7 @@ class CommentView(APIView):
 
     def get_queryset(self, article_id):
         """특정 게시물의 댓글 목록을 반환하는 쿼리셋"""
-        return Comment.objects.filter(article_id=article_id)\
+        return Comment.objects.filter(article_id=article_id, is_deleted=False)\
             .select_related('author')\
             .prefetch_related('replies__author')
 
