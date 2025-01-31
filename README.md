@@ -30,6 +30,11 @@
 17. [👥 팀 정보](#-팀-정보)
 18. [🔜 향후 계획](#-향후-계획)
 
+## 📃 노션 문서
+- [SA](https://www.notion.so/SA-8-16c5e4665f3a800bb4aac47a4d36f388?pvs=4)
+- [Brochure](https://teamsparta.notion.site/Whyding-1702dc3ef51480ab98bbc965bf06a9ee)
+- [Team Notion](https://teamsparta.notion.site/16c2dc3ef5148162948dc1184ed22214)
+
 ## 👀 소개
 
 AI 웨딩 사진 합성 서비스
