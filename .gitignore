@@ -89,6 +89,10 @@ coverage.xml
 # Architecture
 architecture.drawio
 
+# Ignore session SQL file
+whyding.session.sql
+
+# Ignore zshrc file
 .zshrc
 
 
