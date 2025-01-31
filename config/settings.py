@@ -3,16 +3,11 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
-print(os.getenv("DJANGO_SETTINGS_MODULE"))
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env 파일 로드
-ENV_PATH = BASE_DIR / '.env'
-if ENV_PATH.exists():
-    load_dotenv(ENV_PATH)
+load_dotenv(BASE_DIR / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
@@ -156,6 +151,9 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
 }
 
+# 블랙리스트된 토큰 자동 삭제 설정
+DJANGO_REFRESH_TOKEN_BLACKLIST_CLEAR_PERIOD = 60 * 60 * 24  # 1일 (초 단위)
+
 # Swagger settings
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -187,34 +185,31 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# 블랙리스트된 토큰 자동 삭제 설정
-DJANGO_REFRESH_TOKEN_BLACKLIST_CLEAR_PERIOD = 60 * 60 * 24  # 1일 (초 단위)
-
-# 로깅 설정
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-}
+# # 로깅 설정
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'INFO',
+#     },
+# }

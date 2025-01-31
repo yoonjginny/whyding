@@ -5,6 +5,30 @@
 <img src="https://github.com/user-attachments/assets/38683997-2994-4681-a9bc-d531076a40fc" style="display: block; margin: 0 auto;" />
 </div>
 
+## 🗄️ Other repo
+
+[💻whyding-frontend]([https://github.com/whyding/whyding-frontend](https://github.com/missal-botanic/FE_whyding))
+
+## 📖 목차
+
+1. [👀 소개](#-소개)
+2. [🛠 기술 스택](#-기술-스택)
+3. [🌐 아키텍처](#-아키텍처)
+4. [📋 주요 기능](#-주요-기능)
+5. [⛓️ ERD](#-erd)
+6. [🚀 시작하기](#-시작하기)
+7. [📝 API 문서](#-api-문서)
+8. [🔑 소셜 로그인 설정](#-소셜-로그인-설정)
+9. [🧪 테스트](#-테스트)
+10. [📁 프로젝트 구조](#-프로젝트-구조)
+11. [🔒 환경 변수 설정](#-환경-변수-설정)
+12. [🔐 보안](#-보안)
+13. [🔄 API 엔드포인트](#-api-엔드포인트)
+14. [📈 성능 최적화](#-성능-최적화)
+15. [📜 라이센스](#-라이센스)
+16. [🔄 버전 관리](#-버전-관리)
+17. [👥 팀 정보](#-팀-정보)
+18. [🔜 향후 계획](#-향후-계획)
 
 ## 👀 소개
 
@@ -271,3 +295,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ⚠️ 알려진 이슈
 
 현재 알려진 이슈들과 해결 방법을 기록합니다.
+
+
+

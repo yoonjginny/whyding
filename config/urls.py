@@ -11,15 +11,12 @@ from django.http import HttpResponse
 schema_view = get_schema_view(
     openapi.Info(
         title="API 문서",
-        default_version='v1',
+        default_version='v2.2.0',
         description="API 설명",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
-
-def health_check(request):
-    return HttpResponse("OK")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +25,4 @@ urlpatterns = [
     path('api/feedback/', include('feedback.urls')),
     path('api/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/accounts/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('health/', health_check, name='health_check'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
