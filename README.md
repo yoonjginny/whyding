@@ -7,7 +7,7 @@
 
 ## 🗄️ Other repo
 
-[💻whyding-frontend]([https://github.com/whyding/whyding-frontend](https://github.com/missal-botanic/FE_whyding))
+[💻whyding-frontend](https://github.com/missal-botanic/FE_whyding)
 
 ## 📖 목차
 
