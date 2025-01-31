@@ -18,7 +18,7 @@ if ENV_PATH.exists():
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,14 +49,17 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-NAVER_CLIENT_ID = 'YA4NsEZxMnzxSkRs50Jb'
-NAVER_CLIENT_SECRET = '1XxUR7oopV'
-NAVER_REDIRECT_URI = 'http://localhost:8000/api/accounts/naver/callback/'
-KAKAO_CLIENT_ID = 'd57472fec2ded003fa05be6d7cf547b1'
-KAKAO_REDIRECT_URI = 'http://localhost:8000/api/accounts/kakao/callback/'
-GOOGLE_CLIENT_ID = '878988763702-5140r9cj6a51jbun7ucp8e6d5q32h58k.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
-GOOGLE_REDIRECT_URI = 'http://localhost:8000/api/accounts/google/callback/'
+# 소셜 로그인 설정
+NAVER_CLIENT_ID = os.getenv('NAVER_CLIENT_ID')
+NAVER_CLIENT_SECRET = os.getenv('NAVER_CLIENT_SECRET')
+NAVER_REDIRECT_URI = os.getenv('NAVER_REDIRECT_URI')
+
+KAKAO_CLIENT_ID = os.getenv('KAKAO_CLIENT_ID')
+KAKAO_REDIRECT_URI = os.getenv('KAKAO_REDIRECT_URI')
+
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI')
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
